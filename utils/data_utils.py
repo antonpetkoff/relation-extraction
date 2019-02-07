@@ -13,30 +13,51 @@ def json_to_df(path):
     return df
 
 
-def analyze_relation_distribution(df):
+def get_relation_distribution(df):
     unique_relation_labels = np.unique(df['relation'])
     relation_distribution = {
         relation: df[df.relation == relation]['relation'].count()
         for relation in unique_relation_labels
     }
-    data_size = len(df)
-    relation_shares = [
-        relation_size / data_size
-        for relation_size in relation_distribution.values()
-    ]
-    sorted_relation_distribution = dict(sorted(relation_distribution.items(), key=lambda kv: kv[1]))
+    return dict(sorted(relation_distribution.items(), key=lambda kv: kv[1]))
 
-    print('Relations in alphabetical order:\n')
-    pprint(relation_distribution)
 
-    chart = plt.pie(
-        sorted_relation_distribution.values(),
-        labels=sorted_relation_distribution.keys(),
+def draw_relation_distribution(relation_distribution):
+    plt.pie(
+        relation_distribution.values(),
+        labels=relation_distribution.keys(),
         autopct='%1.1f%%',
         radius=4,
         startangle=0
     )
+    plt.show()
+
+
+def show_examples(df, relation_distribution):
+    attributes = ['sentence', 'head.word', 'relation', 'tail.word']
+
+    for relation in relation_distribution.keys():
+        example = df[df.relation == relation].iloc[0]
+        for attribute in attributes:
+            print('{}: {}'.format(attribute, example[attribute]))
+        print()
 
 
 def analyze_data_set(df):
-    return analyze_relation_distribution(df)
+    relation_distribution = get_relation_distribution(df)
+
+    print('Relations in alphabetical order:\n')
+    pprint(relation_distribution)
+
+    print('Relation distribution:\n')
+    draw_relation_distribution(relation_distribution)
+
+    print('Relation distribution without NA:\n')
+    draw_relation_distribution({
+        relation: count
+        for relation, count in relation_distribution.items()
+        if relation != 'NA'
+    })
+
+    print('Examples:\n')
+    show_examples(df, relation_distribution)

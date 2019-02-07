@@ -27,7 +27,7 @@ def draw_relation_distribution(relation_distribution):
         relation_distribution.values(),
         labels=relation_distribution.keys(),
         autopct='%1.1f%%',
-        radius=4,
+        # radius=3,
         startangle=0
     )
     plt.show()
@@ -43,7 +43,15 @@ def show_examples(df, relation_distribution):
         print()
 
 
+def draw_sentence_length_distribution(df):
+    lengths = df['sentence'].apply(len)
+    max_len = lengths.max()
+    return lengths.hist(bins=max_len)
+
+
 def analyze_data_set(df):
+    plt.rcParams['figure.figsize'] = [16,9]
+
     relation_distribution = get_relation_distribution(df)
 
     print('Relations in alphabetical order:\n')
@@ -61,3 +69,6 @@ def analyze_data_set(df):
 
     print('Examples:\n')
     show_examples(df, relation_distribution)
+
+    print('Sentence length distribution:\n')
+    draw_sentence_length_distribution(df)

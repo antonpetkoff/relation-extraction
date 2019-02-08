@@ -1,6 +1,7 @@
 import json
 import numpy as np
 from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 from nltk.corpus import stopwords
 from nltk.tokenize import RegexpTokenizer
 from functools import partial
@@ -14,11 +15,11 @@ class LogRegWordEmbeddings(BaseModel):
             'description': 'Logistic Regression with Word Embeddings (Baseline)',
             'logreg_clf_params': {
                 'multi_class': 'multinomial',
-                'penalty': 'l2',
-                'class_weight': 'balanced',
+                # 'penalty': 'l2',
+                # 'class_weight': 'balanced',
                 'solver': 'lbfgs',
-                'max_iter': 3000,
-                'n_jobs': 1, # get_n_jobs(),
+                # 'max_iter': 3000,
+                'n_jobs': 2, # get_n_jobs(),
             },
             'word_embeddings_path': '../data/raw/word_vec.json'
         }
@@ -33,22 +34,26 @@ class LogRegWordEmbeddings(BaseModel):
             self.word_embeddings,
             len(self.word_embeddings['the'])
         )
+        self.label_encoder = OneHotEncoder()
 
 
     # train_x is a dataframe with columns head.word, tail.word, sentence
     def fit(self, train_x, train_y):
-        features = self.transform(train_x)
+        self.train_features = self.transform(train_x)
+        self.train_labels = self.transform_labels(train_y.values.reshape(-1, 1))
 
         self.model = LogisticRegression(**self.params['logreg_clf_params'])
 
         print('Fitting model...')
-        self.model.fit(features, train_y)
+        # self.model.fit(self.train_features, self.train_labels)
 
 
     def predict(self, test_x):
         features = self.transform(test_x)
 
-        return self.model.predict(features)
+        predictions = self.model.predict(features)
+
+        return self.label_encoder.inverse_transform(predictions)
 
 
     # transforms the input train_x or test_x examples into features for the model
@@ -63,6 +68,15 @@ class LogRegWordEmbeddings(BaseModel):
         print(df_vectors.head())
 
         return df_vectors
+
+
+    def transform_labels(self, df):
+        print('Fitting label encoder...')
+        self.label_encoder.fit(df)
+        print(self.label_encoder.categories_)
+
+        print('Transforming labels...')
+        return self.label_encoder.transform(df)
 
 
     def preprocess(self, text):

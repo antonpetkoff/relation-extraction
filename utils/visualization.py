@@ -45,8 +45,8 @@ def show_examples(df, relation_distribution):
 
 def draw_sentence_length_distribution(df):
     lengths = df['sentence'].apply(len)
-    max_len = lengths.max()
-    return lengths.hist(bins=max_len)
+    # max_len = lengths.max()
+    return lengths.hist(bins=1200)
 
 
 def analyze_data_set(df):

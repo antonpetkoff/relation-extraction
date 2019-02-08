@@ -25,7 +25,7 @@ class LogRegWordEmbeddings(BaseModel):
         self.tokenizer = RegexpTokenizer(r'\w+')
         self.stop_words = set(stopwords.words('english'))
         self.word_embeddings = LogRegWordEmbeddings.load_word_embeddings(
-            path=self.params['word_embeddings_path']
+            self.params['word_embeddings_path']
         )
         self.average = partial(
             LogRegWordEmbeddings.average_embeddings,
@@ -38,8 +38,8 @@ class LogRegWordEmbeddings(BaseModel):
     def fit(self, train_x, train_y):
         features = self.transform(train_x)
 
-        self.model = LogisticRegression(**self.params['logreg_clf_params'])
-        self.model.fit(features, train_y)
+        # self.model = LogisticRegression(**self.params['logreg_clf_params'])
+        # self.model.fit(features, train_y)
 
 
     def predict(self, test_x):
@@ -51,8 +51,14 @@ class LogRegWordEmbeddings(BaseModel):
     # transforms the input train_x or test_x examples into features for the model
     # df is a dataframe with columns head.word, tail.word, sentence
     def transform(self, df):
+        print('Tokenizing sentences...')
         df_tokenized = df['sentence'].apply(self.preprocess)
+        print(df_tokenized.head())
+
+        print('Averaging word embeddings...')
         df_vectors = df_tokenized.apply(self.average)
+        print(df_vectors.head())
+
         return df_vectors
 
 
@@ -70,7 +76,7 @@ class LogRegWordEmbeddings(BaseModel):
 
     @staticmethod
     def load_word_embeddings(path):
-        with open() as f:
+        with open(path) as f:
             word_vec = json.load(f)
 
         word_embeddings = {

@@ -14,7 +14,3 @@ def remove_outlier_sentence_lengths(df):
     cleaned_count = len(cleaned)
     print('Removed {} outliers\n'.format(total_count - cleaned_count))
     return cleaned
-
-# TODO: draw boxplot
-
-# TODO: find out which are the outlier sentences

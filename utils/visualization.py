@@ -3,6 +3,7 @@ from pandas.io.json import json_normalize
 import json
 import numpy as np
 import matplotlib.pyplot as plt
+import preprocessing
 
 
 def json_to_df(path):
@@ -72,3 +73,7 @@ def analyze_data_set(df):
 
     print('Sentence length distribution:\n')
     draw_sentence_length_distribution(df)
+
+    print('Boxplot of sentence length:\n')
+    df = preprocessing.add_sentence_length(df)
+    df['sentence.length'].plot.box()

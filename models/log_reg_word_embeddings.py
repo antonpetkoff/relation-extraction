@@ -9,6 +9,11 @@ from functools import partial
 from base_model import BaseModel
 
 
+# TODO: extract
+def flatten(list):
+    return [item for sublist in list for item in sublist]
+
+
 class LogRegWordEmbeddings(BaseModel):
     def __init__(self):
         self.params = {
@@ -19,7 +24,7 @@ class LogRegWordEmbeddings(BaseModel):
                 # 'class_weight': 'balanced',
                 'solver': 'lbfgs',
                 # 'max_iter': 3000,
-                'n_jobs': 2, # get_n_jobs(),
+                'n_jobs': 4, # get_n_jobs(),
             },
             'word_embeddings_path': '../data/raw/word_vec.json'
         }
@@ -29,23 +34,24 @@ class LogRegWordEmbeddings(BaseModel):
         self.word_embeddings = LogRegWordEmbeddings.load_word_embeddings(
             self.params['word_embeddings_path']
         )
+        self.word_embeddings_dim = len(self.word_embeddings['the'])
         self.average = partial(
             LogRegWordEmbeddings.average_embeddings,
             self.word_embeddings,
-            len(self.word_embeddings['the'])
+            self.word_embeddings_dim
         )
-        self.label_encoder = OneHotEncoder()
+        self.label_encoder = LabelEncoder()
 
 
     # train_x is a dataframe with columns head.word, tail.word, sentence
     def fit(self, train_x, train_y):
         self.train_features = self.transform(train_x)
-        self.train_labels = self.transform_labels(train_y.values.reshape(-1, 1))
+        self.train_labels = self.transform_labels(train_y)
 
         self.model = LogisticRegression(**self.params['logreg_clf_params'])
 
         print('Fitting model...')
-        # self.model.fit(self.train_features, self.train_labels)
+        self.model.fit(self.train_features, self.train_labels)
 
 
     def predict(self, test_x):
@@ -67,16 +73,22 @@ class LogRegWordEmbeddings(BaseModel):
         df_vectors = df_tokenized.apply(self.average)
         print(df_vectors.head())
 
-        return df_vectors
+        vectors = np.asarray(flatten(df_vectors)).reshape(-1, self.word_embeddings_dim)
+        print('Shape of transformed input: {}'.format(vectors.shape))
+
+        return vectors
 
 
     def transform_labels(self, df):
         print('Fitting label encoder...')
         self.label_encoder.fit(df)
-        print(self.label_encoder.categories_)
+        print(self.label_encoder.classes_)
 
         print('Transforming labels...')
-        return self.label_encoder.transform(df)
+        labels = self.label_encoder.transform(df)
+        print('Shape of transformed labels: {}'.format(labels.shape))
+
+        return labels
 
 
     def preprocess(self, text):

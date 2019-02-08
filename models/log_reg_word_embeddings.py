@@ -13,6 +13,7 @@ class LogRegWordEmbeddings(BaseModel):
         self.params = {
             'description': 'Logistic Regression with Word Embeddings (Baseline)',
             'logreg_clf_params': {
+                'multi_class': 'multinomial',
                 'penalty': 'l2',
                 'class_weight': 'balanced',
                 'solver': 'lbfgs',
@@ -38,8 +39,10 @@ class LogRegWordEmbeddings(BaseModel):
     def fit(self, train_x, train_y):
         features = self.transform(train_x)
 
-        # self.model = LogisticRegression(**self.params['logreg_clf_params'])
-        # self.model.fit(features, train_y)
+        self.model = LogisticRegression(**self.params['logreg_clf_params'])
+
+        print('Fitting model...')
+        self.model.fit(features, train_y)
 
 
     def predict(self, test_x):

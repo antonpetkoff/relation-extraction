@@ -5,8 +5,7 @@ from nltk.corpus import stopwords
 from nltk.tokenize import RegexpTokenizer
 from functools import partial
 
-from models.base_model import BaseModel
-from utils import get_n_jobs
+from base_model import BaseModel
 
 
 class LogRegWordEmbeddings(BaseModel):
@@ -18,7 +17,7 @@ class LogRegWordEmbeddings(BaseModel):
                 'class_weight': 'balanced',
                 'solver': 'lbfgs',
                 'max_iter': 3000,
-                'n_jobs': get_n_jobs(),
+                'n_jobs': 1, # get_n_jobs(),
             },
             'word_embeddings_path': '../data/raw/word_vec.json'
         }

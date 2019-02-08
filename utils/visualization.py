@@ -6,14 +6,6 @@ import matplotlib.pyplot as plt
 import preprocessing
 
 
-def json_to_df(path):
-    with open(path) as json_file:
-        json_data = json.load(json_file)
-
-    df = json_normalize(json_data)
-    return df
-
-
 def get_relation_distribution(df):
     unique_relation_labels = np.unique(df['relation'])
     relation_distribution = {

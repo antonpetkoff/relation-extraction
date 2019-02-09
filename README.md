@@ -37,3 +37,8 @@
 `transformers/`: Contains all feature transformers.
 
 `utils.py`: A set of utility methods used for model evaluation, and others.
+
+## Data
+
+The data being used is the NYT10 data set found [here](https://github.com/thunlp/OpenNRE#nyt10-dataset).
+Download the resources and follow the instructions to set up the data set.

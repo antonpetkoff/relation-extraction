@@ -20,11 +20,11 @@ class LogRegWordEmbeddings(BaseModel):
             'description': 'Logistic Regression with Word Embeddings (Baseline)',
             'logreg_clf_params': {
                 'multi_class': 'multinomial',
-                # 'penalty': 'l2',
-                # 'class_weight': 'balanced',
+                'penalty': 'l2',
+                'class_weight': 'balanced',
                 'solver': 'lbfgs',
                 # 'max_iter': 3000,
-                'n_jobs': 4, # get_n_jobs(),
+                'n_jobs': 6, # get_n_jobs(),
             },
             'word_embeddings_path': '../data/raw/word_vec.json'
         }

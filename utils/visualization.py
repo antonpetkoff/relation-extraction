@@ -1,8 +1,10 @@
 from pprint import pprint
 from pandas.io.json import json_normalize
 import json
+import itertools
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.patheffects as PathEffects
 import preprocessing
 
 
@@ -69,3 +71,59 @@ def analyze_data_set(df):
     print('Boxplot of sentence length:\n')
     df = preprocessing.add_sentence_length(df)
     df['sentence.length'].plot.box()
+
+
+def plot_confusion_matrix(cm,
+                          classes,
+                          normalize=False,
+                          title='Confusion matrix',
+                          cmap=plt.cm.Blues):
+    """
+    This function prints and plots the confusion matrix.
+    Normalization can be applied by setting `normalize=True`.
+    """
+    if normalize:
+        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+        print("Normalized confusion matrix")
+    else:
+        print('Confusion matrix, without normalization')
+
+    print(cm)
+
+    np.set_printoptions(precision=1)
+
+    plt.imshow(cm, interpolation='nearest', cmap=cmap)
+    plt.title(title)
+    plt.colorbar()
+    tick_marks = np.arange(len(classes))
+    plt.xticks(tick_marks, classes, rotation=45)
+    plt.yticks(tick_marks, classes)
+
+    fmt = '.2f' if normalize else 'd'
+    thresh = cm.max() / 2.
+    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+        txt = plt.text(j, i, format(cm[i, j], fmt),
+                       horizontalalignment="center",
+                       color="white" if cm[i, j] > thresh else "black")
+        if i == j:
+            txt.set_path_effects([PathEffects.withStroke(linewidth=2, foreground='yellow')])
+
+
+    plt.ylabel('True label')
+    plt.xlabel('Predicted label')
+    plt.tight_layout()
+    plt.show()
+    return plt
+
+
+def plot_precision_recall_curve(precision, recall):
+    plt.step(recall, precision, color='b', alpha=0.2, where='post')
+    plt.fill_between(recall, precision, alpha=0.2, color='b')
+
+    plt.xlabel('Recall')
+    plt.ylabel('Precision')
+    plt.ylim([0.0, 1.05])
+    plt.xlim([0.0, 1.0])
+    plt.title('Precision-Recall curve')
+    plt.show()
+    return plt

@@ -57,6 +57,12 @@ class LogRegWordEmbeddingsAll(BaseModel):
         return self.label_encoder.inverse_transform(predictions)
 
 
+    def predict_proba(self, test_x):
+        features = self.transform(test_x)
+
+        return self.model.predict_proba(features)
+
+
     # transforms the input train_x or test_x examples into features for the model
     # df is a dataframe with columns head.word, tail.word, sentence
     def transform(self, df):

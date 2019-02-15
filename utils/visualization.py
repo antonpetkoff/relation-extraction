@@ -75,6 +75,7 @@ def analyze_data_set(df):
 
 def plot_confusion_matrix(cm,
                           classes,
+                          name,
                           normalize=False,
                           title='Confusion matrix',
                           cmap=plt.cm.Blues):
@@ -87,8 +88,6 @@ def plot_confusion_matrix(cm,
         print("Normalized confusion matrix")
     else:
         print('Confusion matrix, without normalization')
-
-    print(cm)
 
     np.set_printoptions(precision=1)
 
@@ -112,7 +111,11 @@ def plot_confusion_matrix(cm,
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
     plt.tight_layout()
-    plt.show()
+
+    plot_path = '../plots/cnf_matrix_{}.png'.format(name)
+    plt.savefig(plot_path)
+    print('Confusion Matrix plot saved at: {}'.format(plot_path))
+
     return plt
 
 

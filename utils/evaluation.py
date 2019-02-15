@@ -93,18 +93,20 @@ def evaluate(y_actual, y_pred, y_pred_probs, classes, name):
     plt.rcParams["figure.figsize"] = (12, 12)
     plot_precision_recall_curve(y_true, y_scores, name).show()
 
-    # cnf_matrix = confusion_matrix(
-    #     y_true=y_actual,
-    #     y_pred=y_true,
-    #     labels=classes
-    # )
+    cnf_matrix = confusion_matrix(
+        y_true=y_actual,
+        y_pred=y_pred,
+        labels=classes
+    )
 
-    # visualization.plot_confusion_matrix(
-    #     cnf_matrix,
-    #     classes=classes,
-    #     normalize=True,
-    #     title='Normalized confusion matrix'
-    # ).show()
+    plt.rcParams["figure.figsize"] = (28, 28)
+    visualization.plot_confusion_matrix(
+        cm=cnf_matrix,
+        classes=classes,
+        name=name,
+        normalize=True,
+        title='Normalized confusion matrix'
+    ).show()
 
     return precision, recall, f1, ap_area
 

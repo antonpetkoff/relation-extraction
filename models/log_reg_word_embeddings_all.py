@@ -16,7 +16,7 @@ class LogRegWordEmbeddingsAll(BaseModel):
             'logreg_clf_params': {
                 'multi_class': 'multinomial',
                 'penalty': 'l2',
-                'class_weight': 'balanced',
+                # 'class_weight': 'balanced',
                 'solver': 'lbfgs',
                 # 'max_iter': 3000,
                 'n_jobs': 6, # get_n_jobs(),

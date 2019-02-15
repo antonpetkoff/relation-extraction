@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import matplotlib.pyplot as plt
+import json
 from sklearn.metrics import f1_score, precision_score, recall_score, accuracy_score, average_precision_score
 from sklearn.metrics import precision_recall_curve, average_precision_score, confusion_matrix
 from sklearn.preprocessing import OneHotEncoder
@@ -86,6 +87,20 @@ def plot_precision_recall_curve(y_true, y_scores, name):
     return plt
 
 
+def get_pscore(y_true, y_scores, label='P@N Evaluation'):
+    allprob = np.reshape(np.array(y_scores), (-1))
+    allans  = np.reshape(y_true, (-1))
+    order   = np.argsort(-allprob)
+
+    def p_score(n):
+        corr_num = 0.0
+        for i in order[:n]:
+            corr_num += 1.0 if (allans[i] == 1) else 0
+        return corr_num / n
+
+    return p_score(100), p_score(200), p_score(300)
+
+
 def evaluate(y_actual, y_pred, y_pred_probs, classes, name):
     precision, recall, f1 = calc_prec_recall_f1(y_actual, y_pred)
     ap_area, y_true, y_scores = calc_average_precision_area(y_actual, y_pred_probs, classes)
@@ -108,18 +123,24 @@ def evaluate(y_actual, y_pred, y_pred_probs, classes, name):
         title='Normalized confusion matrix'
     ).show()
 
-    return precision, recall, f1, ap_area
+    accuracy = accuracy_score(y_actual, y_pred)
 
+    p100, p200, p300 = get_pscore(y_true, y_scores)
 
-def compute_score(predicted_labels, gold_labels, labels=[], average='weighted'):
-    accuracy = accuracy_score(gold_labels, predicted_labels)
-    precision = precision_score(gold_labels, predicted_labels, average=average)
-    recall = recall_score(gold_labels, predicted_labels, average=average)
-    f1 = f1_score(gold_labels, predicted_labels, average=average)
-
-    return {
+    results = {
         'accuracy': accuracy,
         'precision': precision,
         'recall': recall,
         'f1': f1,
+        'ap_area': ap_area,
+        'p@100': p100,
+        'p@200': p200,
+        'p@300': p300
     }
+
+    results_path = '../results/{}.json'.format(name)
+    with open(results_path, 'w') as f:
+        json.dump(results, f)
+    print('Saved results JSON at: {}'.format(results_path))
+
+    return results

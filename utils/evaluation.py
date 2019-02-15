@@ -64,9 +64,12 @@ def plot_precision_recall_curve(y_true, y_scores, name):
 
     plt.plot(recall[:], precision[:], label=name, color ='red', lw=1, marker = 'o', markevery = 0.1, ms = 6)
 
-    base_list = ['RESIDE', 'BGWA', 'PCNN+ATT', 'PCNN', 'MIMLRE', 'MultiR', 'Mintz']
-    color     = ['black', 'purple', 'darkorange', 'green', 'xkcd:azure', 'orchid', 'cornflowerblue']
-    marker    = ['+', 'd', 's', '^', '*', 'v', 'x', 'h']
+    base_list = [# 'LogRegAll_CW','LogRegAll', 'CNN',
+                 'RESIDE', 'BGWA', 'PCNN+ATT', 'PCNN', 'MIMLRE', 'MultiR', 'Mintz']
+    color     = [# 'magenta', 'orange', 'blue',
+                 'black', 'purple', 'darkorange', 'green', 'xkcd:azure', 'orchid', 'cornflowerblue']
+    marker    = [# 'p', 'h', '8',
+                 '+', 'd', 's', '^', '*', 'v', 'x', 'h']
 #     plt.ylim([0.3, 1.0])
 #     plt.xlim([0.0, 0.45])
 
@@ -105,7 +108,7 @@ def evaluate(y_actual, y_pred, y_pred_probs, classes, name):
     precision, recall, f1 = calc_prec_recall_f1(y_actual, y_pred)
     ap_area, y_true, y_scores = calc_average_precision_area(y_actual, y_pred_probs, classes)
 
-    plt.rcParams["figure.figsize"] = (12, 12)
+    plt.rcParams["figure.figsize"] = (12, 10)
     plot_precision_recall_curve(y_true, y_scores, name).show()
 
     cnf_matrix = confusion_matrix(
